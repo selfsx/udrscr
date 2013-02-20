@@ -12,14 +12,14 @@ __underscore.h uses [function overloading](http://clang.llvm.org/docs/LanguageEx
 
 ```objective-c
 
-// __u()
+// Will be __u()
 NSLog(@"%s", __PRETTY_FUNCTION__); 
 
-// __u(p)
+// Will be __u(p)
 CGPoint p = CGPointMake(74, 23);
-NSLog(@"{x: %f, y: %f}", p.x, p.y);=
+NSLog(@"{x: %f, y: %f}", p.x, p.y);
 
-// __um(My Rect, r);
+// Will be __um(My Rect, r);
 CGRect r = CGRectMake(23, 34, 345, 453);
 NSLog(@"My Rect: {x: %f, y: %f, width: %f, height: %f}", 
         r.origin.x, 
