@@ -34,68 +34,89 @@
 
 #import <Foundation/Foundation.h>
 
-// Simple shortcut
-#ifdef DEBUG
-#  define __U_LOG(...) NSLog(__VA_ARGS__);
-#else
-#  define __U_LOG(...) /* */
+#if !__has_extension(attribute_overloadable)
+#  error "__underscore requires attribute_overloadable support"
 #endif
 
-// [p]rint [m]essage
-#ifdef DEBUG
-#  define __pm(...) NSLog(@"__: %s", #__VA_ARGS__);
+#ifndef __UNDERSCORE_OFF__
+#  if defined(DEBUG) || defined(__UNDERSCORE_ON__)
+#    define __U_LOG(...) NSLog(__VA_ARGS__);
+#
+#    // Shortcut macros to print simple text message without using of quotes
+#    define __um(msg, type) printf("%s: ", #msg); __u(type);
+#  else
+#    define __U_LOG(...) /* */
+#    define __um(...) /* */
+#  endif
 #else
-#  define __pm(...) /* */
+#  define __U_LOG(...) /* */
+#  define __um(...) /* */
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// [p]rint function/method name
-static inline void __p(void) {
+// Print function/method name
+static inline void __attribute__((overloadable)) __u(void) {
   NSArray *sym = [NSThread callStackSymbols];
   __U_LOG(@"__: %@", (2 > [sym count]) ? @"__null" : [sym objectAtIndex:1]);
 }
 
-// [p]rint [s]tring
-static inline void __ps(NSString *str) {
-  __U_LOG(@"__: %@", str);
+// Print string
+static inline void __attribute__((overloadable)) __u(NSString *str) {
+  __U_LOG(@"__: L:%d %@", [str length], str);
 }
 
-// [p]rint [o]bject
-static inline void __po(id obj) {
+// Print object's description
+static inline void __attribute__((overloadable)) __u(id obj) {
   __U_LOG(@"__: %@", [obj description]);
 }
 
-// [p]rint [c]har string
-static inline void __pc(char *c) {
-  __U_LOG(@"__: %s", c);
+// Print char string
+static inline void __attribute__((overloadable)) __u(const char *c) {
+  __U_LOG(@"__: L:%zu %s", strlen(c), c);
 }
 
-// [p]rint [i]nteger
-static inline void __pi(int i) {
+// Print integer
+static inline void __attribute__((overloadable)) __u(int i) {
   __U_LOG(@"__: %d", i);
 }
 
-// [p]rint [f]loat
-static inline void __pf(float f) {
+// Print float
+static inline void __attribute__((overloadable)) __u(float f) {
   __U_LOG(@"__: %f", f);
 }
 
-// [p]rint [d]ouble
-static inline void __pd(double d) {
+// Print double
+static inline void __attribute__((overloadable)) __u(double d) {
   __U_LOG(@"__: %f", d);
 }
 
-// print caller's name
-static inline void __clr(void) {
+static inline void __attribute__((overloadable)) __u(CGPoint p) {
+  __U_LOG(@"__: {x: %f, y: %f}", p.x, p.y);
+}
+
+static inline void __attribute__((overloadable)) __u(CGSize s) {
+  __U_LOG(@"__: {width: %f, height: %f}", s.width, s.height);
+}
+
+static inline void __attribute__((overloadable)) __u(CGRect r) {
+  __U_LOG(@"__: {x: %f, y: %f, width: %f, height: %f}",
+          r.origin.x,
+          r.origin.y,
+          r.size.width,
+          r.size.height);
+}
+
+// Print caller's name
+static inline void __u_clr(void) {
   NSArray *sym = [NSThread callStackSymbols];
   __U_LOG(@"__: %@", (3 > [sym count]) ? @"__null" : [sym objectAtIndex:2]);
 }
 
-// print stack frame
-static inline void __stk(void) {
+// Print stack frame
+static inline void __u_stk(void) {
   __U_LOG(@"__: %@", [[NSThread callStackSymbols] description]);
 }
 
